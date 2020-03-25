@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>自动填单工具</title>
+    <link
+      rel="stylesheet"
+      href="https://cdn.staticfile.org/element-ui/2.13.0/theme-chalk/index.css"
+    />
+  </head>
+  <body>
+    <div id="app">
+      <el-container>
+        <el-main>
+          <el-form
+            ref="form"
+            :model="formData"
+            :rules="rules"
+            label-width="130px"
+          >
+            <el-form-item label="chrome.exe路径" prop="executablePath">
+              <el-input
+                placeholder="请输入chrome.exe路径"
+                v-model="formData.executablePath"
+              ></el-input>
+            </el-form-item>
+            <el-form-item label="用户名" prop="config.username">
+              <el-input
+                placeholder="请输入用户名"
+                v-model="formData.config.username"
+              ></el-input>
+            </el-form-item>
+            <el-form-item label="密码" prop="config.password">
+              <el-input
+                placeholder="请输入密码"
+                type="password"
+                v-model="formData.config.password"
+              ></el-input>
+            </el-form-item>
+            <el-form-item label="时间" prop="date">
+              <el-date-picker
+                v-model="formData.date"
+                type="month"
+                placeholder="请选择年月"
+              >
+              </el-date-picker>
+            </el-form-item>
+            <el-form-item label="报销事由" prop="reasons">
+              <el-input
+                placeholder="请输入报销事由"
+                v-model="formData.reasons"
+              ></el-input>
+            </el-form-item>
+            <el-form-item label="交通费-类别" prop="fare.type">
+              <el-select
+                placeholder="请选择交通费-类别"
+                v-model="formData.fare.type"
+              >
+                <el-option label="员工属地打车" value="2075"></el-option>
+                <el-option label="员工属地汽油" value="2076"></el-option>
+                <el-option label="员工属地停车及过路" value="2077"></el-option>
+                <el-option label="员工属地地铁" value="2078"></el-option>
+                <el-option label="员工属地之外打车" value="2079"></el-option>
+                <el-option label="员工属地之外汽油" value="2080"></el-option>
+                <el-option
+                  label="员工属地之外停车及过路"
+                  value="2081"
+                ></el-option>
+                <el-option label="员工属地之外地铁" value="2082"></el-option>
+                <el-option label="飞机" value="2083"></el-option>
+                <el-option label="火车" value="2084"></el-option>
+                <el-option label="订票费" value="2085"></el-option>
+                <el-option label="退票费" value="2086"></el-option>
+                <el-option label="交通意外保险" value="2087"></el-option>
+                <el-option label="长途汽车票" value="2905"></el-option>
+                <el-option label="员工属地公交车票" value="2918"></el-option>
+                <el-option
+                  label="员工属地交通卡充值票"
+                  value="2919"
+                ></el-option>
+                <el-option
+                  label="员工属地之外公交车票"
+                  value="2922"
+                ></el-option>
+                <el-option
+                  label="员工属地之外交通卡充值票"
+                  value="2923"
+                ></el-option>
+              </el-select>
+            </el-form-item>
+            <el-form-item label="交通费-起始地" prop="fare.from">
+              <el-input
+                placeholder="请输入交通费-起始地"
+                v-model="formData.fare.from"
+              ></el-input>
+            </el-form-item>
+            <el-form-item label="交通费-目的地" prop="fare.to">
+              <el-input
+                placeholder="请输入交通费-目的地"
+                v-model="formData.fare.to"
+              ></el-input>
+            </el-form-item>
+            <el-form-item label="交通费-事由" prop="fare.desc">
+              <el-input
+                placeholder="请输入交通费-事由"
+                v-model="formData.fare.desc"
+              ></el-input>
+            </el-form-item>
+            <el-form-item>
+              <el-row type="flex" justify="center">
+                <el-button type="primary" @click="submit">开始填单</el-button>
+              </el-row>
+            </el-form-item>
+          </el-form>
+        </el-main>
+      </el-container>
+    </div>
+    <script src="https://cdn.staticfile.org/vue/2.6.11/vue.min.js"></script>
+    <script src="https://cdn.staticfile.org/element-ui/2.13.0/index.js"></script>
+    <script src="https://cdn.staticfile.org/element-ui/2.13.0/locale/zh-CN.min.js"></script>
+    <script>
+      let params = localStorage.getItem('params');
+      if (params) {
+        params = JSON.parse(params);
+      } else {
+        params = {};
+      }
+      new Vue({
+        el: '#app',
+        computed: {
+          rules() {
+            return {
+              executablePath: [
+                { required: true, message: '请输入chrome默认安装路径' }
+              ],
+              'config.username': [{ required: true, message: '请输入用户名' }],
+              'config.password': [{ required: true, message: '请输入密码' }],
+              date: [{ required: true, message: '请选择年月' }],
+              'fare.type': [{ required: true, message: '请输入交通费-类别' }],
+              'fare.from': [{ required: true, message: '请输入交通费-起始地' }],
+              'fare.to': [{ required: true, message: '请输入交通费-目的地' }],
+              'fare.desc': [{ required: true, message: '请输入交通费-事由' }]
+            };
+          }
+        },
+        data() {
+          return {
+            formData: {
+              executablePath:
+                params.executablePath ||
+                'C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe',
+              config: params.config || {
+                username: '',
+                password: ''
+              },
+              date: '',
+              reasons: params.reasons || '加班超过晚上10点，申请报销车补和饭补',
+              fare: params.fare || {
+                type: '2075',
+                from: '广报中心',
+                to: '',
+                desc: '加班太晚无公交车'
+              }
+            }
+          };
+        },
+        methods: {
+          submit() {
+            this.$refs.form.validate(valid => {
+              if (valid) {
+                const moment = require('moment');
+                const date = new moment(this.formData.date);
+                const year = date.year().toString();
+                const month = (date.month() + 1).toString().padStart(2, 0);
+                const params = {
+                  executablePath: this.formData.executablePath,
+                  config: this.formData.config,
+                  year: year,
+                  month: month,
+                  reasons: this.formData.reasons,
+                  fare: this.formData.fare
+                };
+                localStorage.setItem('params', JSON.stringify(params));
+                require('./fill')(params);
+              }
+            });
+          }
+        }
+      });
+    </script>
+  </body>
+</html>
